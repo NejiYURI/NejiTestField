@@ -1,7 +1,7 @@
 using PixelMapMaker;
 using UnityEngine;
 
-namespace Editor
+namespace PixelEditor
 {
     public class PixelMap : ScriptableObject
     {
