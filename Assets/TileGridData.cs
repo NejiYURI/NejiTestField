@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class TileGridData
+[CreateAssetMenu(fileName = "NewTile", menuName = "TileObj/NewTileData")]
+public class TileGridData : ScriptableObject
 {
-    public TileBase tileBase;
-
     public Vector3Int GridLocation;
 
     public Vector3 WorldLocation;
@@ -21,4 +20,6 @@ public class TileGridData
     public bool IsBlocked;
 
     public TileGridData previousTile;
+
+    public bool IsSelected;
 }

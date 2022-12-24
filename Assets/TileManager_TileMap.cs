@@ -6,6 +6,8 @@ using UnityEngine.Tilemaps;
 
 public class TileManager_TileMap : MonoBehaviour
 {
+    public static TileManager_TileMap TileManager;
+
     public Tilemap map;
 
     public Dictionary<Vector2Int, TileGridData> GridMap;
@@ -13,10 +15,12 @@ public class TileManager_TileMap : MonoBehaviour
     public Vector3 TileOffset;
 
     public TileBase tile_Normal;
-    public TileBase tile_Selected;
+    public TileBase tile_SelectedByUser;
+    public TileBase tile_SelectedBySystem;
 
     private void Awake()
     {
+        TileManager = this;
         int xmax = map.cellBounds.max.x;
         int ymax = map.cellBounds.max.y;
         int zmax = map.cellBounds.max.z;
@@ -32,7 +36,6 @@ public class TileManager_TileMap : MonoBehaviour
                     if (map.HasTile(GridLocation) && !GridMap.ContainsKey(getPos))
                     {
                         TileGridData newtile = new TileGridData();
-                        newtile.tileBase = map.GetTile(GridLocation);
                         newtile.GridLocation = GridLocation;
                         newtile.WorldLocation = map.CellToWorld(GridLocation);
                         newtile.TileOffset = this.TileOffset;
@@ -85,13 +88,44 @@ public class TileManager_TileMap : MonoBehaviour
     public void ActiveTile(Vector3Int i_pos)
     {
         if (map.HasTile(i_pos))
-            map.SetTile(i_pos, tile_Selected);
+            map.SetTile(i_pos, tile_SelectedByUser);
+    }
+
+    public void SelectTile(Vector3Int i_pos)
+    {
+        if (map.HasTile(i_pos) && GridMap.ContainsKey(new Vector2Int(i_pos.x, i_pos.y)))
+        {
+            GridMap[new Vector2Int(i_pos.x, i_pos.y)].IsSelected= true;
+            map.SetTile(i_pos, tile_SelectedBySystem);
+        }
+           
+    }
+
+    public void CancelSelectTile(Vector3Int i_pos)
+    {
+        if (map.HasTile(i_pos) && GridMap.ContainsKey(new Vector2Int(i_pos.x, i_pos.y)))
+        {
+            GridMap[new Vector2Int(i_pos.x, i_pos.y)].IsSelected = false;
+            map.SetTile(i_pos, tile_Normal);
+        }
+
     }
 
     public void ResetTile(Vector3Int i_pos)
     {
-        if (map.HasTile(i_pos))
-            map.SetTile(i_pos, tile_Normal);
+        if (map.HasTile(i_pos) && GridMap.ContainsKey(new Vector2Int(i_pos.x, i_pos.y)))
+        {
+            if (GridMap[new Vector2Int(i_pos.x, i_pos.y)].IsSelected)
+            {
+                map.SetTile(i_pos, tile_SelectedBySystem);
+            }
+            else
+            {
+                map.SetTile(i_pos, tile_Normal);
+            }
+            
+        }
+            
     }
 
 
