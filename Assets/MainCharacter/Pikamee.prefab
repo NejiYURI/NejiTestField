@@ -99,4 +99,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerTileVector: {x: 0, y: 0, z: 0}
   MoveRange: 3
-  AtkRange: 4
+  AtkRange: 2

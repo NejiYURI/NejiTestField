@@ -12,7 +12,14 @@ using UnityEngine;
 
         public override void StartFunction()
         {
-            characterScript.StartCoroutine(CharacterMove(this.PathList));
+        if (GameEventManager.gameEvent != null)
+        {
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("MoveBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("AtkBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("EndRoundBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("CancelBtn", false);
+        }
+        characterScript.StartCoroutine(CharacterMove(this.PathList));
         }
 
         IEnumerator CharacterMove(List<TileGridData> pathList)

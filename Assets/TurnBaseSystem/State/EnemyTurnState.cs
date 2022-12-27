@@ -15,7 +15,7 @@ public class EnemyTurnState : StateData
 
     IEnumerator WaitTimer()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
         TurnEndFunction();
     }
 

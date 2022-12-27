@@ -15,7 +15,7 @@ public class MainGameManager : TurnBaseStateMachine
 
     public List<Vector2Int> Enemy_StartPos;
 
-    public Button MoveButton;
+    public GameObject PlayerUI;
 
     private void Awake()
     {
@@ -42,6 +42,20 @@ public class MainGameManager : TurnBaseStateMachine
     public GameObject SpawnObj(GameObject i_obj, Vector3 i_pos)
     {
         return Instantiate(i_obj, i_pos, Quaternion.identity);
+    }
+
+    public void SpawnCharacter(Vector2Int i_pos, GameObject i_Character)
+    {
+        TileGridData gridData = new TileGridData();
+        if (TileManager_TileMap.TileManager.GetTileData(i_pos, out gridData))
+        {
+            GameObject EnemyObj = SpawnObj(i_Character, gridData.GetPosOnTile());
+            if (EnemyObj.GetComponent<IF_GameCharacter>() != null)
+            {
+                TileManager_TileMap.TileManager.CharacterInTile(gridData.TileLocation, EnemyObj.GetComponent<IF_GameCharacter>());
+                EnemyObj.GetComponent<IF_GameCharacter>().TileVector = gridData.TileLocation;
+            }
+        }
     }
 }
 

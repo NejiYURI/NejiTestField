@@ -13,6 +13,8 @@ public class GameEventManager : MonoBehaviour
     }
     public UnityEvent<string> ActionSelect;
 
+    public UnityEvent<string, bool> SetUIVisibility;
+
     public UnityEvent PlayerTurn;
 
 }

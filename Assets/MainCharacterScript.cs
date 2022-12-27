@@ -8,6 +8,18 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
 
     public Vector3Int PlayerTileVector;
 
+    Vector3Int IF_GameCharacter.TileVector
+    {
+        get
+        {
+            return PlayerTileVector;
+        }
+        set
+        {
+            PlayerTileVector = value;
+        }
+    }
+
     public int MoveRange = 3;
 
     public int AtkRange = 2;
@@ -40,6 +52,7 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
         if (GameEventManager.gameEvent != null)
         {
             GameEventManager.gameEvent.PlayerTurn.AddListener(TurnStart);
+            GameEventManager.gameEvent.ActionSelect.AddListener(ButtonAction);
         }
     }
 
@@ -47,6 +60,19 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
     void Update()
     {
         //state.UpdateFunction();
+    }
+    void ButtonAction(string i_input)
+    {
+        switch (i_input)
+        {
+            case "Cancel":
+                state.MouseRClick();
+                break;
+            case "EndRound":
+                MainGameManager.mainGameManager.TurnEnd();
+                SetState(new WaitTurnState(this));
+                break;
+        }
     }
 
     public void SetTileVector(Vector3Int _tile)

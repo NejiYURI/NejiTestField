@@ -15,6 +15,14 @@ public class MoveSelectState : CharacterState
         {
             TileInteractScript.tileInteract.SelectedRange(characterScript.PlayerTileVector, characterScript.MoveRange, true);
         }
+
+        if (GameEventManager.gameEvent != null)
+        {
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("MoveBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("AtkBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("EndRoundBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("CancelBtn", true);
+        }
     }
 
     public override void UpdateFunction()
@@ -26,7 +34,6 @@ public class MoveSelectState : CharacterState
     {
         if (TileManager_TileMap.TileManager != null && TileInteractScript.tileInteract != null)
         {
-            Debug.Log("Move Click!");
             Vector3Int gridPos = TileManager_TileMap.TileManager.GetCellPos(Camera.main.ScreenToWorldPoint(i_MPos));
 
             if (Input.GetMouseButtonDown(0) && TileManager_TileMap.TileManager.CheckHasTile(gridPos) && TileInteractScript.tileInteract.CanSelect(gridPos))

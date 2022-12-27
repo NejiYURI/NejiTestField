@@ -14,6 +14,13 @@ public class AttackSelectState : CharacterState
         {
             TileInteractScript.tileInteract.SelectedRange(characterScript.PlayerTileVector, characterScript.AtkRange, false);
         }
+        if (GameEventManager.gameEvent != null)
+        {
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("MoveBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("AtkBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("EndRoundBtn", false);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("CancelBtn", true);
+        }
     }
 
     public override void MouseClick(Vector2 i_MPos)

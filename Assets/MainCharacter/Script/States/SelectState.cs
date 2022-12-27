@@ -22,6 +22,14 @@ public class SelectState : CharacterState
         {
             if (GameEventManager.gameEvent != null) GameEventManager.gameEvent.ActionSelect.AddListener(ButtonAction);
         }
+
+        if (GameEventManager.gameEvent != null)
+        {
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("MoveBtn", !characterScript.IsMoved());
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("AtkBtn", !characterScript.IsActioned());
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("EndRoundBtn", true);
+            GameEventManager.gameEvent.SetUIVisibility.Invoke("CancelBtn", false);
+        }
     }
 
     public override void ButtonAction(string _action)

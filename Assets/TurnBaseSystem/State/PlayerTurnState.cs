@@ -13,11 +13,19 @@ public class PlayerTurnState : StateData
         if (GameEventManager.gameEvent != null)
         {
             GameEventManager.gameEvent.PlayerTurn.Invoke();
+            if(gameManager.PlayerUI!=null)
+            {
+                gameManager.PlayerUI.SetActive(true);
+            }
         }
     }
 
     public override void TurnEndFunction()
     {
+        if (gameManager.PlayerUI != null)
+        {
+            gameManager.PlayerUI.SetActive(false);
+        }
         gameManager.SetState(new EnemyTurnState(gameManager));
     }
 }
