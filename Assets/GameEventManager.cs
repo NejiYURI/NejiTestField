@@ -13,4 +13,6 @@ public class GameEventManager : MonoBehaviour
     }
     public UnityEvent<string> ActionSelect;
 
+    public UnityEvent PlayerTurn;
+
 }

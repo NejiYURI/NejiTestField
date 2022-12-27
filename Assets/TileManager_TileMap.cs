@@ -27,18 +27,22 @@ public class TileManager_TileMap : MonoBehaviour
         GridMap = new Dictionary<Vector2Int, TileGridData>();
         for (int z = map.cellBounds.min.z; z < zmax; z++)
         {
-            for (int y = map.cellBounds.min.y; y < ymax; y++)
+            for (int y = map.cellBounds.min.y, gy = 0; y < ymax; y++, gy++)
             {
-                for (int x = map.cellBounds.min.x; x < xmax; x++)
+                for (int x = map.cellBounds.min.x, gx = 0; x < xmax; x++, gx++)
                 {
                     Vector3Int GridLocation = new Vector3Int(x, y, z);
                     Vector2Int getPos = new Vector2Int(x, y);
+
                     if (map.HasTile(GridLocation) && !GridMap.ContainsKey(getPos))
                     {
                         TileGridData newtile = new TileGridData();
-                        newtile.GridLocation = GridLocation;
+                        newtile.ArrayIndex = new Vector2Int(gy, gx);
+                        newtile.TileLocation = GridLocation;
                         newtile.WorldLocation = map.CellToWorld(GridLocation);
                         newtile.TileOffset = this.TileOffset;
+                        //Debug.Log("[" + x + "," + y + "," + z +"]");
+                        //Debug.Log("[" + gx + "," + gy + "]");
                         GridMap.Add(getPos, newtile);
                     }
 
@@ -64,7 +68,21 @@ public class TileManager_TileMap : MonoBehaviour
         return false;
     }
 
-    public TileGridData GetTileData(Vector3Int gridPos,out bool IsSuccess)
+    public bool GetTileData(Vector2Int _Index, out TileGridData _Target)
+    {
+        _Target = new TileGridData();
+        foreach (var item in GridMap)
+        {
+            if (item.Value.ArrayIndex == _Index)
+            {
+                _Target = item.Value;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public TileGridData GetTileData(Vector3Int gridPos, out bool IsSuccess)
     {
         IsSuccess = false;
         if (GridMap.ContainsKey(new Vector2Int(gridPos.x, gridPos.y)))
@@ -75,9 +93,58 @@ public class TileManager_TileMap : MonoBehaviour
         return new TileGridData();
     }
 
+    public void CharacterInTile(Vector3Int gridPos, IF_GameCharacter if_Character)
+    {
+        if (GridMap.ContainsKey(new Vector2Int(gridPos.x, gridPos.y)))
+        {
+            SetTileBlock(gridPos, true);
+            GridMap[new Vector2Int(gridPos.x, gridPos.y)].CharacterOnTile = if_Character;
+        }
+    }
+
+
+    public void CharacterLeaveTile(Vector3Int gridPos)
+    {
+        if (GridMap.ContainsKey(new Vector2Int(gridPos.x, gridPos.y)))
+        {
+            SetTileBlock(gridPos, false);
+            GridMap[new Vector2Int(gridPos.x, gridPos.y)].CharacterOnTile = null;
+        }
+    }
+    public void SetTileBlock(Vector3Int gridPos, bool _IsBlock)
+    {
+        if (GridMap.ContainsKey(new Vector2Int(gridPos.x, gridPos.y)))
+        {
+            GridMap[new Vector2Int(gridPos.x, gridPos.y)].IsBlocked = _IsBlock;
+        }
+    }
+
+    public void SetSelectTileStyle(TileBase _tileBase)
+    {
+        tile_SelectedBySystem = _tileBase;
+    }
+
+    public bool GetTileIsBlock(Vector3Int gridPos)
+    {
+        if (GridMap.ContainsKey(new Vector2Int(gridPos.x, gridPos.y)))
+        {
+            return GridMap[new Vector2Int(gridPos.x, gridPos.y)].IsBlocked;
+        }
+        return false;
+    }
+
     public bool CheckHasTile(Vector3Int i_pos)
     {
         return map.HasTile(i_pos) && GridMap.ContainsKey(new Vector2Int(i_pos.x, i_pos.y));
+    }
+
+    public bool CheckHasCharacter(Vector3Int i_pos)
+    {
+        if (!CheckHasTile(i_pos)) return false;
+        bool GetSuccess = false;
+        TileGridData gridData = GetTileData(i_pos, out GetSuccess);
+        if (!GetSuccess) return false;
+        return gridData.CharacterOnTile != null;
     }
 
     public Vector3Int GetCellPos(Vector2 i_pos)
@@ -95,10 +162,10 @@ public class TileManager_TileMap : MonoBehaviour
     {
         if (map.HasTile(i_pos) && GridMap.ContainsKey(new Vector2Int(i_pos.x, i_pos.y)))
         {
-            GridMap[new Vector2Int(i_pos.x, i_pos.y)].IsSelected= true;
+            GridMap[new Vector2Int(i_pos.x, i_pos.y)].IsSelected = true;
             map.SetTile(i_pos, tile_SelectedBySystem);
         }
-           
+
     }
 
     public void CancelSelectTile(Vector3Int i_pos)
@@ -123,14 +190,20 @@ public class TileManager_TileMap : MonoBehaviour
             {
                 map.SetTile(i_pos, tile_Normal);
             }
-            
+
         }
-            
+
     }
 
 
-    public List<TileGridData> FindPath(TileGridData startTile, TileGridData EndTile)
+    public List<TileGridData> FindPath(Vector3Int startPos, Vector3Int endPos)
     {
+        bool getSuccess = false;
+        TileGridData startTile = GetTileData(startPos, out getSuccess);
+        if (!getSuccess) return new List<TileGridData>();
+        TileGridData EndTile = GetTileData(endPos, out getSuccess);
+        if (!getSuccess) return new List<TileGridData>();
+
         List<TileGridData> openList = new List<TileGridData>();
         List<TileGridData> closedList = new List<TileGridData>();
 
@@ -153,7 +226,7 @@ public class TileManager_TileMap : MonoBehaviour
             foreach (var neighbor in neighborTiles)
             {
                 //1=jump height
-                if (neighbor.IsBlocked || closedList.Contains(neighbor) || Mathf.Abs(currentTile.GridLocation.z - neighbor.GridLocation.z) > 1)
+                if (neighbor.IsBlocked || closedList.Contains(neighbor) || Mathf.Abs(currentTile.TileLocation.z - neighbor.TileLocation.z) > 1)
                 {
                     continue;
                 }
@@ -189,7 +262,7 @@ public class TileManager_TileMap : MonoBehaviour
 
     private int GetDistance(TileGridData tile_a, TileGridData tile_b)
     {
-        return Mathf.Abs(tile_a.GridLocation.x - tile_b.GridLocation.x) + Mathf.Abs(tile_a.GridLocation.y - tile_b.GridLocation.y);
+        return Mathf.Abs(tile_a.TileLocation.x - tile_b.TileLocation.x) + Mathf.Abs(tile_a.TileLocation.y - tile_b.TileLocation.y);
     }
 
     private List<TileGridData> GetNeighborTiles(TileGridData currentTile)
@@ -198,8 +271,8 @@ public class TileManager_TileMap : MonoBehaviour
 
         //Top
         Vector2Int CheckLocation = new Vector2Int(
-            currentTile.GridLocation.x,
-            currentTile.GridLocation.y + 1
+            currentTile.TileLocation.x,
+            currentTile.TileLocation.y + 1
             );
         if (GridMap.ContainsKey(CheckLocation))
         {
@@ -208,8 +281,8 @@ public class TileManager_TileMap : MonoBehaviour
 
         //Bottom
         CheckLocation = new Vector2Int(
-            currentTile.GridLocation.x,
-            currentTile.GridLocation.y - 1
+            currentTile.TileLocation.x,
+            currentTile.TileLocation.y - 1
             );
         if (GridMap.ContainsKey(CheckLocation))
         {
@@ -218,8 +291,8 @@ public class TileManager_TileMap : MonoBehaviour
 
         //Right
         CheckLocation = new Vector2Int(
-            currentTile.GridLocation.x + 1,
-            currentTile.GridLocation.y
+            currentTile.TileLocation.x + 1,
+            currentTile.TileLocation.y
             );
         if (GridMap.ContainsKey(CheckLocation))
         {
@@ -228,8 +301,8 @@ public class TileManager_TileMap : MonoBehaviour
 
         //Left
         CheckLocation = new Vector2Int(
-            currentTile.GridLocation.x - 1,
-            currentTile.GridLocation.y
+            currentTile.TileLocation.x - 1,
+            currentTile.TileLocation.y
             );
         if (GridMap.ContainsKey(CheckLocation))
         {

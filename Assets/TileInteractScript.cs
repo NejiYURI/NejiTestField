@@ -2,12 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Tilemaps;
 
 public class TileInteractScript : MonoBehaviour
 {
     public static TileInteractScript tileInteract;
 
     private List<Vector3Int> SelectList;
+
+    public TileBase tile_MoveSelect;
+
+    public TileBase tile_AtkSelect;
+
+
     private void Awake()
     {
         tileInteract = this;
@@ -32,7 +39,7 @@ public class TileInteractScript : MonoBehaviour
         }
     }
 
-    public void SelectedRange(Vector3Int CenterPos, int Range)
+    public void SelectedRange(Vector3Int CenterPos, int Range, bool IsMove)
     {
         if (TileManager_TileMap.TileManager == null) return;
         SelectList = new List<Vector3Int>();
@@ -41,14 +48,17 @@ public class TileInteractScript : MonoBehaviour
         {
             for (int y = CurRange - 1; y > -CurRange; y--)
             {
-                if (TileManager_TileMap.TileManager.CheckHasTile(CenterPos + new Vector3Int(x, y)))
+                if (CenterPos + new Vector3Int(x, y) == CenterPos) continue;
+                if (TileManager_TileMap.TileManager.CheckHasTile(CenterPos + new Vector3Int(x, y)) && (!IsMove || !TileManager_TileMap.TileManager.GetTileIsBlock(CenterPos + new Vector3Int(x, y))))
                 {
+                    TileManager_TileMap.TileManager.SetSelectTileStyle(IsMove ? this.tile_MoveSelect : this.tile_AtkSelect);
                     TileManager_TileMap.TileManager.SelectTile(CenterPos + new Vector3Int(x, y));
                     SelectList.Add(CenterPos + new Vector3Int(x, y));
                 }
                 if (x != 0)
-                    if (TileManager_TileMap.TileManager.CheckHasTile(CenterPos - new Vector3Int(x, y)))
+                    if (TileManager_TileMap.TileManager.CheckHasTile(CenterPos - new Vector3Int(x, y)) && (!IsMove || !TileManager_TileMap.TileManager.GetTileIsBlock(CenterPos - new Vector3Int(x, y))))
                     {
+                        TileManager_TileMap.TileManager.SetSelectTileStyle(IsMove ? this.tile_MoveSelect : this.tile_AtkSelect);
                         TileManager_TileMap.TileManager.SelectTile(CenterPos - new Vector3Int(x, y));
                         SelectList.Add(CenterPos - new Vector3Int(x, y));
                     }
@@ -67,5 +77,10 @@ public class TileInteractScript : MonoBehaviour
             TileManager_TileMap.TileManager.CancelSelectTile(item);
         }
         SelectList = new List<Vector3Int>();
+    }
+
+    public bool CanSelect(Vector3Int i_targetVector)
+    {
+        return SelectList.Contains(i_targetVector);
     }
 }

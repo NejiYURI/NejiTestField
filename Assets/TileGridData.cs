@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu(fileName = "NewTile", menuName = "TileObj/NewTileData")]
-public class TileGridData : ScriptableObject
+
+public class TileGridData
 {
-    public Vector3Int GridLocation;
+    public Vector2Int ArrayIndex;
+
+    public Vector3Int TileLocation;
 
     public Vector3 WorldLocation;
 
@@ -22,4 +24,11 @@ public class TileGridData : ScriptableObject
     public TileGridData previousTile;
 
     public bool IsSelected;
+
+    public IF_GameCharacter CharacterOnTile;
+
+    public Vector3 GetPosOnTile()
+    {
+        return WorldLocation + TileOffset;
+    }
 }

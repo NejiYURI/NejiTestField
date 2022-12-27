@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class MoveSelectState : CharacterState
+public class AttackSelectState : CharacterState
 {
-    public MoveSelectState(MainCharacterScript characterScript) : base(characterScript)
+    public AttackSelectState(MainCharacterScript characterScript) : base(characterScript)
     {
 
     }
@@ -13,34 +12,27 @@ public class MoveSelectState : CharacterState
     {
         if (TileInteractScript.tileInteract != null)
         {
-            TileInteractScript.tileInteract.SelectedRange(characterScript.PlayerTileVector, characterScript.MoveRange, true);
+            TileInteractScript.tileInteract.SelectedRange(characterScript.PlayerTileVector, characterScript.AtkRange, false);
         }
-    }
-
-    public override void UpdateFunction()
-    {
-
     }
 
     public override void MouseClick(Vector2 i_MPos)
     {
         if (TileManager_TileMap.TileManager != null && TileInteractScript.tileInteract != null)
         {
-            Debug.Log("Move Click!");
+
             Vector3Int gridPos = TileManager_TileMap.TileManager.GetCellPos(Camera.main.ScreenToWorldPoint(i_MPos));
 
-            if (Input.GetMouseButtonDown(0) && TileManager_TileMap.TileManager.CheckHasTile(gridPos) && TileInteractScript.tileInteract.CanSelect(gridPos))
+            if (Input.GetMouseButtonDown(0) && TileManager_TileMap.TileManager.CheckHasCharacter(gridPos) && TileInteractScript.tileInteract.CanSelect(gridPos))
             {
+                Debug.Log("Attack Click!");
                 bool GetSuccess = false;
                 TileGridData TargetPos = TileManager_TileMap.TileManager.GetTileData(gridPos, out GetSuccess);
                 if (GetSuccess)
                 {
-                    List<TileGridData> pathList = new List<TileGridData>();
-                    pathList = TileManager_TileMap.TileManager.FindPath(characterScript.PlayerTileVector, TargetPos.TileLocation);
-                    TileManager_TileMap.TileManager.CharacterLeaveTile(characterScript.PlayerTileVector);
                     if (TileInteractScript.tileInteract != null) TileInteractScript.tileInteract.CancelSelectRange();
-                    characterScript.PlayerMoved();
-                    characterScript.SetState(new MovingState(characterScript, pathList));
+                    characterScript.PlayerActioned();
+                    characterScript.SetState(new AttackState(characterScript, TargetPos.CharacterOnTile));
                 }
             }
         }
