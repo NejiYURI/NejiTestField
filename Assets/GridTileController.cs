@@ -34,10 +34,7 @@ public class GridTileController : MonoBehaviour
     void Update()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //mousePosition = new Vector2(0.5f * Mathf.Round(mousePosition.x / 0.5f), 0.25f * Mathf.Round(mousePosition.y / 0.25f));
         mousePosition = tileManager.ToGridVector(mousePosition);
-
-        mousePosition = new Vector2(Mathf.Round(mousePosition.x),Mathf.Round(mousePosition.y));
         mousePos = mousePosition;
         if (tileManager.HasTile(mousePosition) && mousePosition != PrevPos)
         {

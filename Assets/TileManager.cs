@@ -31,6 +31,7 @@ public class TileManager : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        return;
         Timer += Time.deltaTime;
         for (int i = 0; i < Row; i++)
         {
@@ -39,7 +40,7 @@ public class TileManager : MonoBehaviour
                 if (HasTile(new Vector2(i, j)))
                 {
                     GameObject obj = GridMap[new Vector2(i, j)];
-                    float ypos = Mathf.Sin(Timer * 10f + i+j) * 0.02f;
+                    float ypos = Mathf.Sin(Timer * 10f + i + j) * 0.02f;
                     obj.transform.position += new Vector3(0, ypos, 0);
                 }
             }
@@ -92,11 +93,11 @@ public class TileManager : MonoBehaviour
     public void GenerateBaseTile()
     {
         ClearBaseTile();
+
         for (int x = 0; x < Row; x++)
         {
             for (int y = 0; y < Col; y++)
             {
-
                 Transform SpawnBase = this.transform;
                 if (SpawnTarget != null)
                     SpawnBase = SpawnTarget;
@@ -104,8 +105,6 @@ public class TileManager : MonoBehaviour
                 Vector2 pos = ToScreenVector(GridPos, TileSize);
                 pos += (Vector2)SpawnBase.position;
                 GameObject newTile = Instantiate(basicTile, pos, Quaternion.identity);
-
-
                 if (newTile.GetComponent<TileObject>() != null)
                 {
                     newTile.GetComponent<TileObject>().TileData = BaseTileData;
@@ -184,7 +183,7 @@ public class TileManager : MonoBehaviour
         float c = GirdMatrix.i_hat.y;
         float d = GirdMatrix.j_hat.y;
         Isometric_Matrix inv = invert_matrix(a, b, c, d);
-        return (new Vector2(i_vector.x * inv.i_hat.x + i_vector.y * inv.j_hat.x, i_vector.x * inv.i_hat.y + i_vector.y * inv.j_hat.y)) * i_tilesize;
+        return (new Vector2(Mathf.Round((i_vector.x * inv.i_hat.x + i_vector.y * inv.j_hat.x) / TileSize), Mathf.Round((i_vector.x * inv.i_hat.y + i_vector.y * inv.j_hat.y) / TileSize)));
     }
 
     private Isometric_Matrix invert_matrix(float a, float b, float c, float d)
