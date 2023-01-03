@@ -17,4 +17,6 @@ public class GameEventManager : MonoBehaviour
 
     public UnityEvent PlayerTurn;
 
+    public UnityEvent EnemyActionOver;
+
 }

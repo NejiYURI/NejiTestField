@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using CustomTileSystem;
+using CharacterSystem;
 public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
 {
     private MouseInput mouseInput;
 
-    public Vector3Int PlayerTileVector;
+    public Vector2Int PlayerTileVector;
 
-    Vector3Int IF_GameCharacter.TileVector
+    Vector2Int IF_GameCharacter.TileVector
     {
         get
         {
@@ -47,7 +49,7 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
         IsMove = false;
         IsAction = false;
         SetState(new SelectState(this));
-        mouseInput.MainActionMap.MouseClick.performed += _ => state.MouseClick(mouseInput.MainActionMap.MousePosition.ReadValue<Vector2>());
+        mouseInput.MainActionMap.MouseClick.performed += _ => state.MouseClick(Camera.main.ScreenToWorldPoint(mouseInput.MainActionMap.MousePosition.ReadValue<Vector2>()));
         mouseInput.MainActionMap.MouseRightClick.performed += _ => state.MouseRClick();
         if (GameEventManager.gameEvent != null)
         {
@@ -68,7 +70,7 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
             case "Cancel":
                 state.MouseRClick();
                 break;
-            case "EndRound":
+            case "EndTurn":
                 MainGameManager.mainGameManager.TurnEnd();
                 SetState(new WaitTurnState(this));
                 break;
@@ -77,12 +79,17 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
 
     public void SetTileVector(Vector3Int _tile)
     {
+        this.PlayerTileVector = (Vector2Int)_tile;
+    }
+
+    public void SetTileVector(Vector2Int _tile)
+    {
         this.PlayerTileVector = _tile;
     }
 
     public void GetDamage(float i_dmgVal)
     {
-
+        Debug.Log("Player get" + i_dmgVal + " damage!");
     }
     void TurnStart()
     {
@@ -113,6 +120,30 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
     public bool CheckIsActionOver()
     {
         return IsMove && IsAction;
+    }
+
+    public TileInteractScript GetIneractScript()
+    {
+        if (TileInteractScript.tileInteract != null)
+            return TileInteractScript.tileInteract;
+
+        return null;
+    }
+
+    public TileManager GetTileManager()
+    {
+        if (TileManager.tileManager != null)
+            return TileManager.tileManager;
+
+        return null;
+    }
+
+    public MainGameManager GetMainGameManager()
+    {
+        if (MainGameManager.mainGameManager != null)
+            return MainGameManager.mainGameManager;
+
+        return null;
     }
 }
 

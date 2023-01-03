@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8868b8b80d7767249a56e4d89eb57e1b, type: 3}
-  m_Name: BasicTile
+  m_Name: AttackTile
   m_EditorClassIdentifier: 
-  TileImage: {fileID: 1258325933, guid: e2d1137893c73a949a8c9801f8f3eab0, type: 3}
+  TileImage: {fileID: 920840139, guid: e2d1137893c73a949a8c9801f8f3eab0, type: 3}

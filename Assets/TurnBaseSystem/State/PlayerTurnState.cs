@@ -12,11 +12,12 @@ public class PlayerTurnState : StateData
     {
         if (GameEventManager.gameEvent != null)
         {
-            GameEventManager.gameEvent.PlayerTurn.Invoke();
-            if(gameManager.PlayerUI!=null)
+            if (gameManager.PlayerUI != null)
             {
                 gameManager.PlayerUI.SetActive(true);
             }
+            GameEventManager.gameEvent.PlayerTurn.Invoke();
+           
         }
     }
 

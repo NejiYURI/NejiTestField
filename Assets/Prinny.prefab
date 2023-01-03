@@ -353,5 +353,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 5
-  TileVector: {x: 0, y: 0, z: 0}
+  MoveRange: 2
+  AtkRange: 1
+  TileVector: {x: 0, y: 0}
   HealthBar: {fileID: 302168104}
+  IsMove: 0
+  IsAction: 0

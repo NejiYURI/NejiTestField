@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CustomTileSystem;
 public class StartState : StateData
 {
     public StartState(MainGameManager gameManager) : base(gameManager)
@@ -14,12 +15,15 @@ public class StartState : StateData
         {
             gameManager.PlayerUI.SetActive(false);
         }
-        if (TileManager_TileMap.TileManager != null)
+        if (TileManager.tileManager != null)
         {
             gameManager.SpawnCharacter(gameManager.Player_StartPos, gameManager.PlayerObject);
+            gameManager.EnemyList = new List<IF_EnemyFunc>();
             foreach (var EnePos in gameManager.Enemy_StartPos)
             {
-                gameManager.SpawnCharacter(EnePos, gameManager.EnemyObject);
+               
+                GameObject tmp_enemy = gameManager.SpawnCharacter(EnePos, gameManager.EnemyObject);
+                if (TileManager.tileManager.HasTile(EnePos) && gameManager.EnemyObject.GetComponent<IF_EnemyFunc>() != null && tmp_enemy!=null) gameManager.EnemyList.Add(tmp_enemy.GetComponent<IF_EnemyFunc>());
             }
         }
         gameManager.SetState(new PlayerTurnState(gameManager));
