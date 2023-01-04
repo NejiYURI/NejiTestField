@@ -31,6 +31,12 @@ public class EnemyCharacter : EnemyStateMachine, IF_GameCharacter, IF_EnemyFunc
             TileVector = value;
         }
     }
+
+    float IF_GameCharacter.Health
+    {
+        get { return Health; }
+        set { Health = value; }
+    }
     private void Start()
     {
         MaxHealth = Health;

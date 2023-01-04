@@ -10,6 +10,9 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
 
     public Vector2Int PlayerTileVector;
 
+    public float Health = 5;
+    private float MaxHealth;
+
     Vector2Int IF_GameCharacter.TileVector
     {
         get
@@ -20,6 +23,12 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
         {
             PlayerTileVector = value;
         }
+    }
+
+    float IF_GameCharacter.Health
+    {
+        get { return Health; }
+        set { Health = value; }
     }
 
     public int MoveRange = 3;
@@ -48,6 +57,7 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
     {
         IsMove = false;
         IsAction = false;
+        MaxHealth = Health;
         SetState(new SelectState(this));
         mouseInput.MainActionMap.MouseClick.performed += _ => state.MouseClick(Camera.main.ScreenToWorldPoint(mouseInput.MainActionMap.MousePosition.ReadValue<Vector2>()));
         mouseInput.MainActionMap.MouseRightClick.performed += _ => state.MouseRClick();
@@ -55,6 +65,8 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
         {
             GameEventManager.gameEvent.PlayerTurn.AddListener(TurnStart);
             GameEventManager.gameEvent.ActionSelect.AddListener(ButtonAction);
+            GameEventManager.gameEvent.SetUIImageFillAmount.Invoke("PlayerHealthBar", Health, MaxHealth);
+            GameEventManager.gameEvent.PlayerTurnOver.AddListener(TurnOver);
         }
     }
 
@@ -89,7 +101,20 @@ public class MainCharacterScript : CharacterStateMachine, IF_GameCharacter
 
     public void GetDamage(float i_dmgVal)
     {
-        Debug.Log("Player get" + i_dmgVal + " damage!");
+        Health -= i_dmgVal;
+        if (GameEventManager.gameEvent != null)
+        {
+            GameEventManager.gameEvent.SetUIImageFillAmount.Invoke("PlayerHealthBar", Health, MaxHealth);
+        }
+        if (Health<=0 && MainGameManager.mainGameManager != null)
+        {
+            MainGameManager.mainGameManager.RestartLevel();
+        }
+    }
+
+    void TurnOver()
+    {
+        SetState(new WaitTurnState(this));
     }
     void TurnStart()
     {

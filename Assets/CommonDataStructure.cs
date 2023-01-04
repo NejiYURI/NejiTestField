@@ -16,3 +16,21 @@ class Isometric_Matrix
     public Vector2 j_hat;
 }
 
+
+public abstract class LevelObject
+{
+    public Vector2Int Pos;
+
+    public GameObject obj;
+}
+[System.Serializable]
+public class LevelCharacter : LevelObject
+{
+    
+}
+[System.Serializable]
+public class LevelObstacle : LevelObject
+{
+
+}
+

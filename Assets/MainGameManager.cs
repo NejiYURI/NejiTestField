@@ -5,19 +5,17 @@ using UnityEngine;
 using UnityEngine.UI;
 //using TileMapSystem;
 using CustomTileSystem;
+using UnityEngine.SceneManagement;
+
 public class MainGameManager : TurnBaseStateMachine
 {
 
     public static MainGameManager mainGameManager;
     public GameObject PlayerObject;
 
-    public Vector2Int Player_StartPos;
-
+    public List<LevelData> LevelSetup;
     private Vector2Int Player_Position;
 
-    public GameObject EnemyObject;
-
-    public List<Vector2Int> Enemy_StartPos;
     public List<IF_EnemyFunc> EnemyList;
 
     public GameObject PlayerUI;
@@ -28,7 +26,6 @@ public class MainGameManager : TurnBaseStateMachine
     }
     private void Start()
     {
-        Player_Position = Player_StartPos;
         SetState(new StartState(this));
     }
 
@@ -50,7 +47,7 @@ public class MainGameManager : TurnBaseStateMachine
         return Instantiate(i_obj, i_pos, Quaternion.identity);
     }
 
-    public GameObject SpawnCharacter(Vector2Int i_pos, GameObject i_Character)
+    public GameObject SpawnCharacter(Vector2Int i_pos, GameObject i_Character, bool SpawnNew = true)
     {
         bool IsSucces = false;
         #region-TileMap Ver
@@ -71,7 +68,8 @@ public class MainGameManager : TurnBaseStateMachine
         if (IsSucces)
         {
             //Debug.Log("Spawn " + i_Character.name);
-            GameObject SpawnCharacter = SpawnObj(i_Character, gridData.WorldLocation);
+            GameObject SpawnCharacter = SpawnNew ? SpawnObj(i_Character, gridData.WorldLocation) : i_Character;
+            if (!SpawnNew) i_Character.transform.position = gridData.WorldLocation;
             if (SpawnCharacter.GetComponent<IF_GameCharacter>() != null)
             {
                 TileManager.tileManager.CharacterInTile(gridData.GridPosition, SpawnCharacter.GetComponent<IF_GameCharacter>());
@@ -84,7 +82,7 @@ public class MainGameManager : TurnBaseStateMachine
     }
     public int GetEnemyAmount()
     {
-        return Enemy_StartPos.Count;
+        return EnemyList.Count;
     }
 
     public Vector2Int GetPlayerPos()
@@ -100,6 +98,23 @@ public class MainGameManager : TurnBaseStateMachine
     public void RemoveEnemy(IF_EnemyFunc i_target)
     {
         if (EnemyList.Contains(i_target)) EnemyList.Remove(i_target);
+        if (EnemyList.Count <= 0)
+        {
+            if (GameEventManager.gameEvent != null)
+            {
+                GameEventManager.gameEvent.PlayerTurnOver.Invoke();
+            }
+            if (TileManager.tileManager != null)
+            {
+                TileManager.tileManager.ClearAllCharacterOnTile();
+            }
+            SetState(new StartState(this));
+        }
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
 

@@ -26,7 +26,6 @@ namespace CharacterSystem
 
             if (GameEventManager.gameEvent != null)
             {
-                Debug.Log("PlayerStart" + !characterScript.IsMoved());
                 GameEventManager.gameEvent.SetUIVisibility.Invoke("MoveBtn", !characterScript.IsMoved());
                 GameEventManager.gameEvent.SetUIVisibility.Invoke("AtkBtn", !characterScript.IsActioned());
                 GameEventManager.gameEvent.SetUIVisibility.Invoke("EndTurnBtn", true);

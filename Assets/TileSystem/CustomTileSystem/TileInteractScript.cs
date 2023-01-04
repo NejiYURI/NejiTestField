@@ -16,6 +16,9 @@ namespace CustomTileSystem
         public TileData tile_AtkSelect;
 
         private Vector2Int? PrevGridPos = null;
+        public AnimationCurve WaveCurve;
+        [Range(1,5)]
+        public float WaveSpeed = 1f;
 
 
         private void Awake()
@@ -102,7 +105,7 @@ namespace CustomTileSystem
         {
             if (TileManager.tileManager != null)
             {
-                Dictionary<int, List<Vector2Int>> Tiles= TileManager.tileManager.GetListOfRange(i_Center);
+                Dictionary<int, List<Vector2Int>> Tiles = TileManager.tileManager.GetListOfRange(i_Center);
                 int Index = 0;
                 while (Tiles.Count > 0)
                 {
@@ -114,23 +117,28 @@ namespace CustomTileSystem
                             StartCoroutine(SingleTileWave(TileManager.tileManager.GetTileData(grid, out isSuccess).GetTileGameObject().transform));
                         }
                         Tiles.Remove(Index);
-                        yield return new WaitForSeconds(0.1f);
+                        yield return new WaitForSeconds(0.08f);
                         Index++;
                     }
                 }
-               
+
             }
-            
+
         }
         IEnumerator SingleTileWave(Transform targetObj)
         {
             Vector2 pos = (Vector2)targetObj.position;
-            targetObj.LeanMove(pos + new Vector2(0, 0.08f), 0.02f);
-            yield return new WaitForSeconds(0.08f);
-            targetObj.LeanMove(pos - new Vector2(0, 0.04f), 0.03f);
-            yield return new WaitForSeconds(0.05f);
-            targetObj.LeanMove(pos, 0.05f);
-            yield return new WaitForSeconds(0.05f);
+            float Timer = 0;
+            while (Timer <= 1f)
+            {
+                targetObj.position = pos + new Vector2(0, WaveCurve.Evaluate(Timer));
+                Debug.Log(Timer);
+                if (Timer >= 1) break;
+                yield return new WaitForSeconds(Time.fixedDeltaTime/ WaveSpeed);
+                Timer += Time.fixedDeltaTime;
+                Timer = Mathf.Clamp(Timer, -99, 1);
+            }
+            targetObj.position = pos;
         }
     }
 }

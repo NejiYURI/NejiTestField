@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788ed9e8b4162584e89ed5d6d46c290d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerTileVector: {x: 0, y: 0, z: 0}
+  PlayerTileVector: {x: 0, y: 0}
+  Health: 20
   MoveRange: 3
-  AtkRange: 2
+  AtkRange: 5

@@ -105,6 +105,14 @@ namespace CustomTileSystem
                 GridMap[gridPos].CharacterOnTile = null;
             }
         }
+
+        public void ClearAllCharacterOnTile()
+        {
+            foreach (var tile in GridMap)
+            {
+                SetTileBlock(tile.Value.GridPosition, false);
+            }
+        }
         private void SetTileBlock(Vector2Int gridPos, bool _IsBlock)
         {
             GridMap[gridPos].IsBlocked = _IsBlock;

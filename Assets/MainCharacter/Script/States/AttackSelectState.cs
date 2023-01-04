@@ -40,7 +40,7 @@ namespace CharacterSystem
                     {
                         characterScript.GetIneractScript().CancelSelectRange();
                         characterScript.PlayerActioned();
-                        characterScript.GetIneractScript().StartWave(gridPos);
+                        //characterScript.GetIneractScript().StartWave(gridPos);
                         characterScript.SetState(new AttackState(characterScript, TargetPos.CharacterOnTile));
                     }
                 }

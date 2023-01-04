@@ -15,7 +15,11 @@ public class GameEventManager : MonoBehaviour
 
     public UnityEvent<string, bool> SetUIVisibility;
 
+    public UnityEvent<string, float, float> SetUIImageFillAmount;
+
     public UnityEvent PlayerTurn;
+
+    public UnityEvent PlayerTurnOver;
 
     public UnityEvent EnemyActionOver;
 
